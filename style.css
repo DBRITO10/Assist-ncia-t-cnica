@@ -9,9 +9,26 @@ table { width: 100%; border-collapse: collapse; margin-top: 20px; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
 .error { color: red; }
 
+/* Zebra */
+tbody tr:nth-child(odd) { background: #f9f9f9; }
+tbody tr:nth-child(even) { background: #fff; }
+
+/* Cabeçalho fixo */
+table thead th {
+  position: sticky;
+  top: 0;
+  background: #007bff;
+  color: white;
+}
+
 /* Modal */
 .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto;
   background-color: rgba(0,0,0,0.4); }
 .modal-content { background-color: #fff; margin: 15% auto; padding: 20px; border-radius: 8px; width: 300px; text-align: center; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
 .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
 .close:hover { color: #000; }
+
+/* Histórico colorido */
+.tipo-Entrada, .tipo-Entrada\\ \\(Cadastro\\) { color: green; font-weight: bold; }
+.tipo-Saída { color: red; font-weight: bold; }
+.tipo-Exclusão { color: gray; font-weight: bold; }
