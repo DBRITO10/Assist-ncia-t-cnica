@@ -31,16 +31,24 @@ function listarProdutos(){
   // Ordenar por quantidade desc
   produtos.sort((a, b) => b.quantidade - a.quantidade);
 
+  let role = localStorage.getItem("userRole");
+
   produtos.filter(p => p.nome.toLowerCase().includes(busca)).forEach((p, index) => {
+    let botoes = `
+      <button onclick="abrirModal('entrada', ${index})">Entrada</button>
+      <button onclick="abrirModal('saida', ${index})">Saída</button>
+    `;
+
+    // Apenas admin pode excluir
+    if(role === "admin"){
+      botoes += `<button onclick="excluirProduto(${index})" style="background:#dc3545">Excluir</button>`;
+    }
+
     let row = `<tr>
       <td>${p.nome}</td>
       <td>${p.quantidade}</td>
       <td>R$ ${p.preco}</td>
-      <td>
-        <button onclick="abrirModal('entrada', ${index})">Entrada</button>
-        <button onclick="abrirModal('saida', ${index})">Saída</button>
-        <button onclick="excluirProduto(${index})" style="background:#dc3545">Excluir</button>
-      </td>
+      <td>${botoes}</td>
     </tr>`;
     tabela.innerHTML += row;
   });
@@ -111,4 +119,13 @@ function logout(){
   window.location.href = "index.html";
 }
 
-window.onload = listarProdutos;
+window.onload = () => {
+  let role = localStorage.getItem("userRole");
+
+  // Se não for admin, esconder o formulário de cadastro
+  if(role !== "admin"){
+    document.getElementById("cadastroProduto").style.display = "none";
+  }
+
+  listarProdutos();
+};
