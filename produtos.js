@@ -4,10 +4,18 @@ let produtoNomeAtual = null;
 function salvarProduto(){
   let nome = document.getElementById("nome").value;
   let quantidade = document.getElementById("quantidade").value;
-  let preco = document.getElementById("preco").value;
+  let precoInput = document.getElementById("preco").value;
 
-  if(nome === "" || quantidade === "" || preco === ""){
+  if(nome === "" || quantidade === "" || precoInput === ""){
     alert("Preencha todos os campos!");
+    return;
+  }
+
+  // Converte a string de preço para um número, trocando vírgula por ponto
+  const preco = parseFloat(precoInput.replace('.', '').replace(',', '.'));
+  
+  if (isNaN(preco)) {
+    alert("Preço inválido. Por favor, use o formato 1.000,00");
     return;
   }
 
@@ -46,10 +54,13 @@ function listarProdutos(){
         botoes += `<button onclick="excluirProduto('${p.nome}')">Excluir</button>`;
       }
 
+      // Formata o preço com o formato de moeda brasileiro
+      const precoFormatado = `R$ ${p.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
       let row = `<tr>
         <td>${p.nome}</td>
         <td>${p.quantidade}</td>
-        <td>R$ ${p.preco}</td>
+        <td>${precoFormatado}</td>
         <td>${botoes}</td>
       </tr>`;
       tabela.innerHTML += row;
