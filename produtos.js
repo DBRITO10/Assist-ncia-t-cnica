@@ -1,5 +1,5 @@
 let operacaoAtual = null;
-let produtoIndexAtual = null;
+let produtoNomeAtual = null;
 
 function salvarProduto(){
   let nome = document.getElementById("nome").value;
@@ -33,61 +33,77 @@ function listarProdutos(){
 
   let role = localStorage.getItem("userRole");
 
-  produtos.filter(p => p.nome.toLowerCase().includes(busca)).forEach((p, index) => {
-    let botoes = `
-      <button onclick="abrirModal('entrada', ${index})">Entrada</button>
-      <button onclick="abrirModal('saida', ${index})">Saída</button>
-    `;
+  produtos
+    .filter(p => p.nome.toLowerCase().includes(busca))
+    .forEach((p, index) => {
+      let botoes = `
+        <button onclick="abrirModal('entrada', '${p.nome}')">Entrada</button>
+        <button onclick="abrirModal('saida', '${p.nome}')">Saída</button>
+      `;
 
-    // Apenas admin pode excluir
-    if(role === "admin"){
-      botoes += `<button onclick="excluirProduto(${index})" style="background:#dc3545">Excluir</button>`;
-    }
+      // Apenas admin pode excluir
+      if(role === "admin"){
+        botoes += `<button onclick="excluirProduto('${p.nome}')">Excluir</button>`;
+      }
 
-    let row = `<tr>
-      <td>${p.nome}</td>
-      <td>${p.quantidade}</td>
-      <td>R$ ${p.preco}</td>
-      <td>${botoes}</td>
-    </tr>`;
-    tabela.innerHTML += row;
+      let row = `<tr>
+        <td>${p.nome}</td>
+        <td>${p.quantidade}</td>
+        <td>R$ ${p.preco}</td>
+        <td>${botoes}</td>
+      </tr>`;
+      tabela.innerHTML += row;
   });
 }
 
-function abrirModal(operacao, index){
+function abrirModal(operacao, nome){
+  let modal = document.getElementById("modal");
+  let titulo = document.getElementById("modalTitulo");
+
   operacaoAtual = operacao;
-  produtoIndexAtual = index;
-  document.getElementById("modalTitulo").innerText = operacao === "entrada" ? "Entrada de Produto" : "Saída de Produto";
-  document.getElementById("modalQuantidade").value = "";
-  document.getElementById("modal").style.display = "block";
+  produtoNomeAtual = nome;
+
+  if(operacao === "entrada"){
+    titulo.innerText = "Entrada de " + nome;
+  } else {
+    titulo.innerText = "Saída de " + nome;
+  }
+
+  modal.style.display = "flex";
 }
 
 function fecharModal(){
-  document.getElementById("modal").style.display = "none";
-  operacaoAtual = null;
-  produtoIndexAtual = null;
+  let modal = document.getElementById("modal");
+  modal.style.display = "none";
+  document.getElementById("modalQuantidade").value = "";
 }
 
 function confirmarMovimentacao(){
+  let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
   let qtd = parseInt(document.getElementById("modalQuantidade").value);
+
   if(isNaN(qtd) || qtd <= 0){
-    alert("Quantidade inválida!");
+    alert("Digite uma quantidade válida!");
     return;
   }
 
-  let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-  if(produtoIndexAtual === null) return;
+  // Encontrar o produto pelo nome
+  let produto = produtos.find(p => p.nome === produtoNomeAtual);
+  if(!produto){
+    alert("Produto não encontrado!");
+    return;
+  }
 
   if(operacaoAtual === "entrada"){
-    produtos[produtoIndexAtual].quantidade += qtd;
-    registrarHistorico(produtos[produtoIndexAtual].nome, "Entrada", qtd);
+    produto.quantidade += qtd;
+    registrarHistorico(produto.nome, "Entrada", qtd);
   } else if(operacaoAtual === "saida"){
-    if(produtos[produtoIndexAtual].quantidade < qtd){
+    if(produto.quantidade < qtd){
       alert("Estoque insuficiente!");
       return;
     }
-    produtos[produtoIndexAtual].quantidade -= qtd;
-    registrarHistorico(produtos[produtoIndexAtual].nome, "Saída", qtd);
+    produto.quantidade -= qtd;
+    registrarHistorico(produto.nome, "Saída", qtd);
   }
 
   localStorage.setItem("produtos", JSON.stringify(produtos));
@@ -95,12 +111,18 @@ function confirmarMovimentacao(){
   fecharModal();
 }
 
-function excluirProduto(index){
+function excluirProduto(nome){
   let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
   if(confirm("Tem certeza que deseja excluir este produto?")){
-    let produto = produtos[index];
+    // Encontrar o produto pelo nome
+    let produtoIndex = produtos.findIndex(p => p.nome === nome);
+    if(produtoIndex === -1){
+      alert("Produto não encontrado para exclusão!");
+      return;
+    }
+    let produto = produtos[produtoIndex];
     registrarHistorico(produto.nome, "Exclusão", produto.quantidade);
-    produtos.splice(index, 1);
+    produtos.splice(produtoIndex, 1);
     localStorage.setItem("produtos", JSON.stringify(produtos));
     listarProdutos();
   }
