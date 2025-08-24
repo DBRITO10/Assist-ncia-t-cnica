@@ -28,6 +28,9 @@ function listarProdutos(){
   let tabela = document.querySelector("#tabela tbody");
   tabela.innerHTML = "";
 
+  // Ordenar por quantidade desc
+  produtos.sort((a, b) => b.quantidade - a.quantidade);
+
   produtos.filter(p => p.nome.toLowerCase().includes(busca)).forEach((p, index) => {
     let row = `<tr>
       <td>${p.nome}</td>
@@ -36,6 +39,7 @@ function listarProdutos(){
       <td>
         <button onclick="abrirModal('entrada', ${index})">Entrada</button>
         <button onclick="abrirModal('saida', ${index})">Saída</button>
+        <button onclick="excluirProduto(${index})" style="background:#dc3545">Excluir</button>
       </td>
     </tr>`;
     tabela.innerHTML += row;
@@ -81,6 +85,17 @@ function confirmarMovimentacao(){
   localStorage.setItem("produtos", JSON.stringify(produtos));
   listarProdutos();
   fecharModal();
+}
+
+function excluirProduto(index){
+  let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+  if(confirm("Tem certeza que deseja excluir este produto?")){
+    let produto = produtos[index];
+    registrarHistorico(produto.nome, "Exclusão", produto.quantidade);
+    produtos.splice(index, 1);
+    localStorage.setItem("produtos", JSON.stringify(produtos));
+    listarProdutos();
+  }
 }
 
 function registrarHistorico(produto, tipo, quantidade){
