@@ -12,19 +12,28 @@
     <button onclick="logout()">Sair</button>
   </div>
   <div class="content">
-    <h3>Movimentações</h3>
-    <table id="tabela">
-      <thead>
-        <tr>
-          <th>Data/Hora</th>
-          <th>Usuário</th>
-          <th>Produto</th>
-          <th>Tipo</th>
-          <th>Quantidade</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+   <h3>Movimentações</h3>
+   <label for="filtro">Filtrar por tipo:</label>
+   <select id="filtro" onchange="listarHistorico()">
+     <option value="Todos">Todos</option>
+     <option value="Entrada">Entrada</option>
+     <option value="Entrada (Cadastro)">Entrada (Cadastro)</option>
+     <option value="Saída">Saída</option>
+     <option value="Exclusão">Exclusão</option>
+   </select>
+
+   <table id="tabela">
+     <thead>
+       <tr>
+         <th>Data/Hora</th>
+         <th>Usuário</th>
+         <th>Produto</th>
+         <th>Tipo</th>
+         <th>Quantidade</th>
+       </tr>
+     </thead>
+     <tbody></tbody>
+   </table>
   </div>
   <script src="js/historico.js"></script>
 </body>
