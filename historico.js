@@ -7,7 +7,7 @@ function listarHistorico(){
       <td>${h.data}</td>
       <td>${h.usuario}</td>
       <td>${h.produto}</td>
-      <td>${h.tipo}</td>
+      <td class="tipo-${h.tipo}">${h.tipo}</td>
       <td>${h.quantidade}</td>
     </tr>`;
     tabela.innerHTML += row;
